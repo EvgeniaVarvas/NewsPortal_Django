@@ -1,0 +1,12 @@
+{% extends 'flatpages/default.html' %}
+{% block title %}
+DeletePost
+{% endblock title %}
+{% block content %}
+    <h3>Удалить запись</h3>
+    <form action="" method="post">
+        {% csrf_token %}
+        <p>Вы действительно хотите удалить запись "{{ object.title }}" ?</p>
+        <input type="submit" value="Удалить">
+    </form>
+{% endblock %}

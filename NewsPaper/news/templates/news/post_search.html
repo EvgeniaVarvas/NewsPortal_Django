@@ -1,0 +1,33 @@
+{% extends 'flatpages/default.html' %}  
+{# Импортируем модуль с нашим тегом #}
+{% load custom_tags %}
+{% block title%}
+News
+{% endblock title%}
+{% block content %}
+<br>
+<form action="" method="get">
+    {{ filterset.form }}
+<input type="submit" value="Найти">
+</form>
+<hr>
+<br>
+    {% if post_search %}
+        {% for n in post_search %}
+            
+                <h4>{{ n.title }}</h4>
+                <p>{{ n.created|date:'d F Y' }}</p>
+                <b>{{ n.text|truncatechars:20 }}</b>
+                <a href="{% url 'post_detail' pk=n.id %}">Читать далее</a>
+                {% if not forloop.last %}
+                <hr>
+                
+    {% endif %}
+        {% endfor %}
+    {% else %}
+        <h2>Новостей нет</h2>
+    {% endif %}
+    <br>
+{# Добавляем пагинацию на страницу #}
+
+{% endblock content %}

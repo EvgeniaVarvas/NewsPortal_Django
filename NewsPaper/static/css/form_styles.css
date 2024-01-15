@@ -1,0 +1,63 @@
+/* Общие стили для формы и контейнера */
+form {
+    max-width: 400px;
+    margin: 0 auto;
+    background-color: #f8f9fa; 
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Стили для поля ввода email */
+form input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: 1px solid #ced4da; /* Цвет рамки поля email */
+    border-radius: 5px;
+}
+
+
+/* Стили для заголовка формы */
+form h2 {
+    text-align: center;
+    color: #007bff; /* Цвет текста заголовка */
+}
+
+/* Стили для текстовых полей ввода */
+form input[type="text"],
+form input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: 1px solid #ced4da; /* Цвет рамки текстовых полей */
+    border-radius: 5px;
+}
+
+
+/* Стили для кнопки отправки формы */
+form input[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Плавное изменение цвета фона при наведении */
+}
+
+/* При наведении на кнопку */
+form input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Стили для ссылки */
+form a {
+    color: #007bff;
+    text-decoration: none;
+    display: block;
+    text-align: right;
+    margin-top: 10px;
+}
