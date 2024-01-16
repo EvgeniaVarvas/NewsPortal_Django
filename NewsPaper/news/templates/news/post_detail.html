@@ -12,12 +12,10 @@
     Опубликовано: {{ post_detail.created|date:'d F Y' }}
     <br>
     Автор: {{ post_detail.author.user}}
-
-    {% if perm.news.add_post %}
+    {% if perms.news.change_post %}
 
     <p><a href="{% url 'post_update' pk=post_detail.pk %}">Редактировать</a>
     <a href="{% url 'post_delete' pk=post_detail.pk %}">Удалить</a>
 
     {% endif %}
-    
 {% endblock content %}
