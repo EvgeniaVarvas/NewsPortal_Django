@@ -1,21 +1,24 @@
-{% extends 'flatpages/default.html' %}  
+{% extends 'flatpages/base.html' %}
 {% load custom_filter %} 
 {% block titile %}
     {{ post_detail.title }}
 {% endblock titile%}
 {% block content %}
-    <h4 style=color:red>{{ post_detail.title|censor }}</h4>
-    <br>
-    <hr>
-    <b>{{ post_detail.text|censor }}</b>
-    <br>
-    Опубликовано: {{ post_detail.created|date:'d F Y' }}
-    <br>
-    Автор: {{ post_detail.author.user}}
+{% include 'flatpages/navbar.html' %}
+<div class="card">
+  <h5 class="card-header">{{ post_detail.title|censor }}</h5>
+  <div class="card-body">
+    <p class="card-text">{{ post_detail.text|censor|linebreaks }}</p>
+  </div>
+    <div class="card-footer text-muted">
+     Автор: {{ post_detail.author.user}}
+    </div>
     {% if perms.news.change_post %}
-
-    <p><a href="{% url 'post_update' pk=post_detail.pk %}">Редактировать</a>
-    <a href="{% url 'post_delete' pk=post_detail.pk %}">Удалить</a>
+  <div class="container text-left mx-0">
+    <a href="{% url 'post_update' pk=post_detail.pk %}" class="btn btn-outline-secondary">Редактировать</a>
+    <a href="{% url 'post_delete' pk=post_detail.pk %}" class="btn btn-outline-danger">Удалить</a>
+</div>
 
     {% endif %}
+
 {% endblock content %}

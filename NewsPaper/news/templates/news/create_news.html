@@ -1,20 +1,19 @@
-{% extends 'flatpages/form_login.html' %}  
-{# Импортируем модуль с нашим тегом #}
+{% extends 'flatpages/base.html' %}
 
 {% block title%}
 CreateNews
 {% endblock%}
 
 {% block content %}
-{% include 'flatpages/default.html' %}
+{% include 'flatpages/navbar.html' %}
 <br>
 <h3>Добавить</h3>
 <hr>
 <br>
 <form method="post" action="">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Добавить</button>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Добавить</button>
 </form>
 
 {% endblock %}

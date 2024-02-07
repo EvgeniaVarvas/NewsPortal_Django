@@ -1,47 +1,43 @@
-{% extends 'flatpages/default.html' %}  
-{# Импортируем модуль с нашим тегом #}
+{% extends 'flatpages/base.html' %}
 {% load custom_tags %}
-{% block title%}
+{% block title %}
 News
-{% endblock title%}
+{% endblock %}
 {% block content %}
-<br>
-<hr>
-    {% if news %}
-        {% for n in news %}
-            
-                <h4>{{ n.title }}</h4>
-                <p>{{ n.created|date:'d F Y' }}</p>
-                <b>{{ n.text|truncatechars:20 }}</b>
-                <a href="{% url 'post_detail' pk=n.id %}">Читать далее</a>
-                {% if not forloop.last %}
-                <hr>
-                
-    {% endif %}
-        {% endfor %}
-    {% else %}
-        <h2>Новостей нет</h2>
-    {% endif %}
-    <br>
+{% include 'flatpages/navbar.html' %}
+<div class="container-fluid mt-3">
+    <div class="row">
+        <div class="col-md-12">
+                {% for n in news %}
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            Опубликовано: {{ n.created|date:'d F Y' }}
+                            {% for category in n.categories.all %}
+                            <p>Категория: <a href="{% url 'category_list' pk=category.id %}">{{ category.name }}</a></p>
+                            {% endfor %}
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ n.title }}</h5>
+                            <p class="card-text">{{ n.text|truncatewords:40 }}</p>
+                            <a class="btn btn-outline-secondary" href="{% url 'post_detail' pk=n.id %}">Читать далее</a>
+                        </div>
+                        <div class="card-footer text-muted">
+                            Автор: {{ n.author.user }}
+                        </div>
+                    </div>
+            {% empty %}
+                <h2>Новостей нет</h2>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
 {# Добавляем пагинацию на страницу #}
-
-{% if page_obj.has_previous %}
-{# Для каждой ссылки пагинации указываем обработку через новый тег #}
-    <a href="?{% url_replace page=1 %}">1</a>
-{% if page_obj.previous_page_number != 1 %}
-    ...
-    <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
-{% endif %}
-{% endif %}
-
-{{ page_obj.number }}
-
-{% if page_obj.has_next %}
-    <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
-    {% if paginator.num_pages != page_obj.next_page_number %}
-        ...
-        <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
-    {% endif %}
-{% endif %}
-
-{% endblock content %}
+<div class="container text-center mt-3">
+    <div class="row">
+        <div class="col-md-12">
+            {% include 'flatpages/pagination.html' %}
+        </div>
+    </div>
+</div>
+{% endblock %}

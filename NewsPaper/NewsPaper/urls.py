@@ -23,8 +23,6 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/', include("accounts.urls")),
-    path('news/', include('news.urls')),
-    path('', RedirectView.as_view(pattern_name='post_search', permanent=False)),
-    path('', include('django.contrib.flatpages.urls')),
-    
+    path('', include('news.urls')),
+    path('base/', include('django.contrib.flatpages.urls')),
 ]
