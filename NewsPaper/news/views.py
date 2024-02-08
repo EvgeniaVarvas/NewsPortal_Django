@@ -1,12 +1,12 @@
 from django.contrib.auth.decorators import login_required
+from django.core.mail import EmailMultiAlternatives
 from django.db.models import Q
-from django.shortcuts import redirect
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import redirect, render, get_object_or_404
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
-from django.views.decorators.csrf import csrf_protect
 from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.conf import settings
 
 from .forms import PostForm
 from .models import Author, Post, Category
@@ -15,6 +15,7 @@ from .models import Author, Post, Category
 class PostListMixin(ListView):
     model = Post
     post_type_filter = None
+    ordering = '-created'
     paginate_by = 3
 
     def get_queryset(self):
@@ -65,9 +66,27 @@ class CategoryList(PostListMixin):
 def subscribe(request, pk):
     user = request.user
     category = Category.objects.get(id=pk)
+    email = user.email
     category.subscribe.add(user)
+    html = render_to_string(
+        'news/subscribe.html', {
+            'category': category,
+            'user': user,
+            'url': 'http://127.0.0.1:8000/categories/',
+        },
+    )
+    msg = EmailMultiAlternatives(
+        subject=f'Вы подписались на категорию {category}',
+        body='',
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[email, ],
+    )
+    msg.attach_alternative(html, 'text/html')
+    try:
+        msg.send()
+    except Exception as e:
+        print(e)
     return redirect('category_all')
-
 
 
 @login_required
@@ -76,7 +95,6 @@ def unsubscribe(request, pk):
     category = Category.objects.get(id=pk)
     category.subscribe.remove(user)
     return redirect('category_all')
-
 
 
 @login_required
