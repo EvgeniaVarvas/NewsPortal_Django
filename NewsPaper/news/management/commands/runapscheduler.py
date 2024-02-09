@@ -1,14 +1,18 @@
 import logging
 import datetime
+from collections import defaultdict
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
+from django.core.mail import EmailMultiAlternatives
 from django.core.management import BaseCommand
+from django.template.loader import render_to_string
 from django_apscheduler import util
 from django_apscheduler.jobstores import DjangoJobStore
 from django_apscheduler.models import DjangoJobExecution
+from django.conf import settings
 
-from NewsPaper.news.models import Post, Category
+from news.models import Post, Category
 
 logger = logging.getLogger(__name__)
 
@@ -17,8 +21,34 @@ def my_job():
     today = datetime.datetime.now()
     last_week = today - datetime.timedelta(days=7)
     posts = Post.objects.filter(created__gte=last_week)
-    categories = set(posts.value_list('category__name', flat=True))
-    subscribers = set(Category.objects.filter(name__in=categories).value_list('subscribe__email'))
+
+    # Создать словарь для хранения почтовых сообщений для каждого пользователя
+    emails_by_user = defaultdict(list)
+
+    # Сгруппировать пользователей по категориям, на которые они подписаны
+    for post in posts:
+        categories = post.categories.all()
+        for category in categories:
+            subscribers = category.subscribe.all()
+            for subscriber in subscribers:
+                emails_by_user[subscriber.email].append(post)
+
+    # Отправить почтовые сообщения каждому пользователю с их соответствующими постами
+    for email, posts_for_user in emails_by_user.items():
+        html = render_to_string(
+            'news/daily_email.html', {
+                'Link': settings.SITE_URL,
+                'posts': posts_for_user,
+            }
+        )
+        msg = EmailMultiAlternatives(
+            subject='Новое за неделю',
+            body='',
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[email],
+        )
+        msg.attach_alternative(html, 'text/html')
+        msg.send()
 
 
 @util.close_old_connections
@@ -35,7 +65,7 @@ class Command(BaseCommand):
 
         scheduler.add_job(
             my_job,
-            trigger=CronTrigger(minute="20", hour="10"),
+            trigger=CronTrigger(day_of_week='fri', minute="45", hour="13"),
             id="my_job",  # The `id` assigned to each job MUST be unique
             max_instances=1,
             replace_existing=True,
