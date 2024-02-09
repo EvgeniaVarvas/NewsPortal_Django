@@ -16,21 +16,22 @@ News
                 категории
                 {{ category }}</a>
             {% endif %}
-            {% for n in category_news_list %}
+            {% for post in category_news_list %}
             <div class="card mb-3">
                 <div class="card-header">
-                    Опубликовано: {{ n.created|date:'d F Y' }}
-                    {% for category in n.categories.all %}
-                    <p>Категория: <a href="{% url 'category_list' pk=category.id %}">{{ category.name }}</a></p>
+                    Опубликовано: {{ post.created|date:'d F Y' }}
+                    {% for category_item in post.categories.all %}
+                    <p>Категория: <a href="{% url 'category_list' pk=category_item.id %}">{{ category_item.name }}</a>
+                    </p>
                     {% endfor %}
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">{{ n.title }}</h5>
-                    <p class="card-text">{{ n.text|truncatewords:40 }}</p>
-                    <a class="btn btn-outline-secondary" href="{% url 'post_detail' pk=n.id %}">Читать далее</a>
+                    <h5 class="card-title">{{ post.title }}</h5>
+                    <p class="card-text">{{ post.text|truncatewords:40 }}</p>
+                    <a class="btn btn-outline-secondary" href="{% url 'post_detail' pk=post.id %}">Читать далее</a>
                 </div>
                 <div class="card-footer text-muted">
-                    Автор: {{ n.author.user }}
+                    Автор: {{ post.author.user }}
                 </div>
             </div>
             {% empty %}
