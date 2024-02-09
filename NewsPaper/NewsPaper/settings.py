@@ -104,8 +104,8 @@ EMAIL_HOST = config('EMAIL_HOST')
 EMAIL_PORT = config('EMAIL_PORT')
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
-EMAIL_USE_TLS = config('EMAIL_USE_TLS')
-EMAIL_USE_SSL = config('EMAIL_USE_SSL')
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
 
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
 # Database
@@ -170,8 +170,8 @@ LOGOUT_REDIRECT_URL = '/'
 
 SERVER_EMAIL = config('SERVER_EMAIL')
 
-MANAGERS = (("Admin Name", "admin@example.com"),)
-ADMINS = (("Admin2 Name", "admin2@example.com"),)
+MANAGERS = config('MANAGERS', cast=lambda v: [tuple(manager.split(',')) for manager in v.split(';')])
+ADMINS = config('MANAGERS', cast=lambda v: [tuple(admin.split(',')) for admin in v.split(';')])
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',

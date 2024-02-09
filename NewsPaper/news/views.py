@@ -72,7 +72,7 @@ def subscribe(request, pk):
         'news/subscribe.html', {
             'category': category,
             'user': user,
-            'url': 'http://127.0.0.1:8000/categories/',
+            'url': f'{settings.SITE_URL}categories/',
         },
     )
     msg = EmailMultiAlternatives(

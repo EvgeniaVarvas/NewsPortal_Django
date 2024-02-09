@@ -6,13 +6,19 @@
 </head>
 <body>
 <h1>
-    Новый пост в вашей избранной категории
+    Новая запись в вашей избранной категории:
 </h1>
 <p>
     <strong>
-        {{category.name}}
+        {{ category.name }}
     </strong>
 </p>
-<a href="{%url 'post_detail' pk=post.pk %}">Смотреть статью</a>
+<p>
+    <strong>Title: </strong>{{ title }}
+</p>
+<p>
+    <strong>Preview: </strong>{{ text }}
+</p>
+<a href="{{ link }}">Читать дальше...</a>
 </body>
 </html>
