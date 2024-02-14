@@ -11,6 +11,10 @@ from django.conf import settings
 from .forms import PostForm
 from .models import Author, Post, Category
 
+from django.http import HttpResponse
+from django.views import View
+from .tasks import hello, printer
+
 
 class PostListMixin(ListView):
     model = Post
@@ -162,3 +166,12 @@ class SearchPost(ListView):
         context['q'] = self.request.GET.get('q')
         context['news'] = self.get_queryset()
         return context
+
+
+class IndexView(View):
+    def get(self, request):
+        # printer.apply_async([10],
+        #                     eta=datetime.now() + timedelta(seconds=5))
+        printer.apply_async([5], countdown=5)
+        hello.delay()
+        return HttpResponse('Hello!Hello!')

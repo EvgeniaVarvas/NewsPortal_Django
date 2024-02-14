@@ -26,6 +26,5 @@ def new_post_subscription(instance):
                          'link': f'{settings.SITE_URL}post_detail/{instance.pk}'}
             )
             from_email = settings.DEFAULT_FROM_EMAIL
-            text_message = strip_tags(message)  # Удаляем HTML-теги
-            # Отправить сообщение каждому пользователю отдельно
+            text_message = strip_tags(message)
             send_mail(subject, text_message, from_email, [email], html_message=message)
