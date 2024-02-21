@@ -1,19 +1,16 @@
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMultiAlternatives
 from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.conf import settings
-
+from .tasks import new_post_subscription
 from .forms import PostForm
 from .models import Author, Post, Category
-
-from django.http import HttpResponse
-from django.views import View
-from .tasks import hello, printer
 
 
 class PostListMixin(ListView):
@@ -119,10 +116,23 @@ class CreateNews(PermissionRequiredMixin, CreateView):
     raise_exception = True
     template_name = 'news/create_news.html'
 
+    # def form_valid(self, form):
+    #     author_instance, created = Author.objects.get_or_create(user=self.request.user)
+    #     form.instance.author = author_instance
+    #     new_post_subscription.delay(post_id=self.object.id)
+    #     return super().form_valid(form)
     def form_valid(self, form):
         author_instance, created = Author.objects.get_or_create(user=self.request.user)
         form.instance.author = author_instance
-        return super().form_valid(form)
+        response = super().form_valid(form)
+
+        # Получаем созданный пост
+        created_post = form.instance
+
+        # Передаем идентификатор созданного поста в задачу celery
+        new_post_subscription.delay(post_id=created_post.id)
+
+        return response
 
 
 class PostDetail(DetailView):
@@ -166,12 +176,3 @@ class SearchPost(ListView):
         context['q'] = self.request.GET.get('q')
         context['news'] = self.get_queryset()
         return context
-
-
-class IndexView(View):
-    def get(self, request):
-        # printer.apply_async([10],
-        #                     eta=datetime.now() + timedelta(seconds=5))
-        printer.apply_async([5], countdown=5)
-        hello.delay()
-        return HttpResponse('Hello!Hello!')
