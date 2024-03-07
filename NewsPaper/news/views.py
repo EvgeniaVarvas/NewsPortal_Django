@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMultiAlternatives
 from django.db.models import Q
@@ -11,6 +13,9 @@ from django.conf import settings
 from .tasks import new_post_subscription
 from .forms import PostForm
 from .models import Author, Post, Category
+from django.core.cache import cache
+
+Logger = logging.getLogger(__name__)
 
 
 class PostListMixin(ListView):
@@ -140,6 +145,14 @@ class PostDetail(DetailView):
     model = Post
     template_name = 'news/post_detail.html'
     context_object_name = 'post_detail'
+
+    def get_object(self, *args, **kwargs):
+        obj = cache.get(f'post-{self.kwargs["pk"]}', None)
+        # если объекта нет в кэше, то получаем его и записываем в кэш
+        if not obj:
+            obj = super().get_object(queryset=self.queryset)
+            cache.set(f'post-{self.kwargs["pk"]}', obj)
+        return obj
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -4,29 +4,30 @@
 News
 {% endblock %}
 {% block content %}
+
 {% include 'flatpages/navbar.html' %}
 <div class="container-fluid mt-3">
     <div class="row">
         <div class="col-md-12">
-                {% for n in news %}
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            Опубликовано: {{ n.created|date:'d F Y' }}
-                            {% for category in n.categories.all %}
-                            <p>Категория: <a href="{% url 'category_list' pk=category.id %}">{{ category.name }}</a></p>
-                            {% endfor %}
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title">{{ n.title }}</h5>
-                            <p class="card-text">{{ n.text|truncatewords:40 }}</p>
-                            <a class="btn btn-outline-secondary" href="{% url 'post_detail' pk=n.id %}">Читать далее</a>
-                        </div>
-                        <div class="card-footer text-muted">
-                            Автор: {{ n.author.user }}
-                        </div>
-                    </div>
+            {% for n in news %}
+            <div class="card mb-3">
+                <div class="card-header">
+                    Опубликовано: {{ n.created|date:'d F Y' }}
+                    {% for category in n.categories.all %}
+                    <p>Категория: <a href="{% url 'category_list' pk=category.id %}">{{ category.name }}</a></p>
+                    {% endfor %}
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ n.title }}</h5>
+                    <p class="card-text">{{ n.text|truncatewords:40 }}</p>
+                    <a class="btn btn-outline-secondary" href="{% url 'post_detail' pk=n.id %}">Читать далее</a>
+                </div>
+                <div class="card-footer text-muted">
+                    Автор: {{ n.author.user }}
+                </div>
+            </div>
             {% empty %}
-                <h2>Новостей нет</h2>
+            <h2>Новостей нет</h2>
             {% endfor %}
         </div>
     </div>
@@ -40,4 +41,5 @@ News
         </div>
     </div>
 </div>
+
 {% endblock %}

@@ -1,10 +1,12 @@
 {% extends 'flatpages/base.html' %}
-{% load custom_filter %} 
+{% load custom_filter %}
+
 {% block titile %}
     {{ post_detail.title }}
 {% endblock titile%}
 {% block content %}
 {% include 'flatpages/navbar.html' %}
+
 <div class="card">
   <h5 class="card-header">{{ post_detail.title|censor }}</h5>
   <div class="card-body">

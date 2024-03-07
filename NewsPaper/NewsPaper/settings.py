@@ -17,6 +17,7 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+LOGGING_DIR = BASE_DIR / 'logs'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -63,6 +64,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # cache
+    # 'django.middleware.cache.UpdateCacheMiddleware',
+    # 'django.middleware.cache.FetchFromCacheMiddleware',
 
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 
@@ -172,7 +176,7 @@ LOGOUT_REDIRECT_URL = '/'
 SERVER_EMAIL = config('SERVER_EMAIL')
 
 MANAGERS = config('MANAGERS', cast=lambda v: [tuple(manager.split(',')) for manager in v.split(';')])
-ADMINS = config('MANAGERS', cast=lambda v: [tuple(admin.split(',')) for admin in v.split(';')])
+ADMINS = config('ADMINS', cast=lambda v: [tuple(admin.split(',')) for admin in v.split(';')])
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -199,6 +203,130 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Europe/Moscow'
+
+# cache
+CACHES = {
+    'default': {
+        'TIMEOUT': 60,  # добавляем стандартное время ожидания в минуту (по умолчанию это 5 минут — 300 секунд)
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'cache_files'),  # Указываем, куда будем сохранять кэшируемые файлы!
+    }
+}
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+    },
+    'formatters': {
+        'console_formatter': {
+            'format': '{asctime} - {levelname}: {message}',  # Уровень DEBUG и выше
+            'style': '{',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+        'warning_formatter': {
+            'format': '{asctime} - {levelname}: {message} {pathname}',  # Уровень WARNING
+            'style': '{',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+        'error_formatter': {
+            'format': '{asctime} - {levelname}: {message} {pathname} {exc_info}',  # Уровень ERROR и CRITICAL
+            'style': '{',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+        'general_formatter': {
+            'format': '{asctime} - {levelname}: {module} {message}',
+            'style': '{',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'console_formatter',
+            'filters': ['require_debug_true'],
+        },
+        'console_warning': {
+            'level': 'WARNING',
+            'class': 'logging.StreamHandler',
+            'formatter': 'warning_formatter',
+            'filters': ['require_debug_true'],
+        },
+        'console_error': {
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
+            'formatter': 'error_formatter',
+            'filters': ['require_debug_true'],
+        },
+        'general': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'formatter': 'general_formatter',
+            'filename': os.path.join(BASE_DIR, 'logs/general.log'),
+            'filters': ['require_debug_false'],
+        },
+        'errors': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'formatter': 'error_formatter',
+            'filename': os.path.join(BASE_DIR, 'logs/errors.log'),
+            'filters': ['require_debug_false'],
+        },
+        'security': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'formatter': 'general_formatter',
+            'filename': os.path.join(BASE_DIR, 'logs/security.log'),
+            'filters': ['require_debug_false'],
+        },
+        'mail_handler': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'filters': ['require_debug_true'],
+            'include_html': True,
+            'formatter': 'warning_formatter',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'console_warning', 'console_error', 'general'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['errors', 'mail_handler'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django.server': {
+            'handlers': ['errors', 'mail_handler'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django.template': {
+            'handlers': ['errors'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django.db.backends': {
+            'handlers': ['errors'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django.security': {
+            'handlers': ['security'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
 
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
