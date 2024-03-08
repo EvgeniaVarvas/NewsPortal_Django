@@ -1,17 +1,21 @@
 from django.contrib import admin
+from modeltranslation.admin import TranslationAdmin
 
 from .models import Author, Category, Post, Comment
 
 
-class PostAdmin(admin.ModelAdmin):
-    list_display = ('title', 'author', 'created', 'get_categories')
-    list_filter = ('created', 'author', 'categories')
-    search_fields = ('created', 'author', 'categories')
+# class PostAdmin(admin.ModelAdmin):
+#     list_display = ('title', 'author', 'created', 'get_categories')
+#     list_filter = ('created', 'author', 'categories')
+#     search_fields = ('created', 'author', 'categories')
+#
+#     def get_categories(self, obj):  # Определение метода get_categories
+#         return ", ".join([category.name for category in obj.categories.all()])
+#
+#     get_categories.short_description = 'Categories'  # Даем короткое описание для поля в админке
 
-    def get_categories(self, obj):  # Определение метода get_categories
-        return ", ".join([category.name for category in obj.categories.all()])
-
-    get_categories.short_description = 'Categories'  # Даем короткое описание для поля в админке
+class PostAdmin(TranslationAdmin):
+    model = Post
 
 
 class CommentAdmin(admin.ModelAdmin):
@@ -43,4 +47,4 @@ class CategoryAdmin(admin.ModelAdmin):
 admin.site.register(Author, AuthorAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Comment, CommentAdmin)
-admin.site.register(Post, PostAdmin)
+admin.site.register(Post)

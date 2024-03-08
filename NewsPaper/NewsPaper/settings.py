@@ -33,6 +33,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # pip install django-modeltranslation
+    'modeltranslation',  # обязательно впишите его перед админом
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -97,8 +100,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'NewsPaper.wsgi.application'
 
 LANGUAGES = [
-    ('en', 'English'),
-    ('ru', 'Russian'),
+    ('en-us', 'English'),
+    ('ru', 'Русский')
 ]
 
 ACCOUNT_EMAIL_REQUIRED = True
