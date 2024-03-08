@@ -1,4 +1,5 @@
 {% extends 'flatpages/base.html' %}
+{% load i18n %}
 {% load custom_filter %}
 
 {% block titile %}
@@ -17,8 +18,12 @@
     </div>
     {% if perms.news.change_post %}
   <div class="container text-left mx-0">
-    <a href="{% url 'post_update' pk=post_detail.pk %}" class="btn btn-outline-secondary">Редактировать</a>
-    <a href="{% url 'post_delete' pk=post_detail.pk %}" class="btn btn-outline-danger">Удалить</a>
+    <a href="{% url 'post_update' pk=post_detail.pk %}" class="btn btn-outline-secondary">
+        {% trans 'Редактировать' %}
+    </a>
+    <a href="{% url 'post_delete' pk=post_detail.pk %}" class="btn btn-outline-danger">
+        {% trans 'Удалить' %}
+    </a>
 </div>
 
     {% endif %}

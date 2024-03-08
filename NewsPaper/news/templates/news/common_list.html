@@ -1,4 +1,5 @@
 {% extends 'flatpages/base.html' %}
+{% load i18n %}
 {% load custom_tags %}
 {% block title %}
 News
@@ -12,18 +13,21 @@ News
             {% for n in news %}
             <div class="card mb-3">
                 <div class="card-header">
-                    Опубликовано: {{ n.created|date:'d F Y' }}
+                    {% trans 'Опубликовано:' %} {{ n.created|date:'d F Y' }}
                     {% for category in n.categories.all %}
-                    <p>Категория: <a href="{% url 'category_list' pk=category.id %}">{{ category.name }}</a></p>
+                    <p>{% trans 'Категория:' %}<a href="{% url 'category_list' pk=category.id %}">
+                        {{ category.name}}</a></p>
                     {% endfor %}
                 </div>
                 <div class="card-body">
                     <h5 class="card-title">{{ n.title }}</h5>
                     <p class="card-text">{{ n.text|truncatewords:40 }}</p>
-                    <a class="btn btn-outline-secondary" href="{% url 'post_detail' pk=n.id %}">Читать далее</a>
+                    <a class="btn btn-outline-secondary" href="{% url 'post_detail' pk=n.id %}">
+                        {% trans 'Читать далее' %}
+                    </a>
                 </div>
                 <div class="card-footer text-muted">
-                    Автор: {{ n.author.user }}
+                    {% trans 'Автор:' %} {{ n.author.user }}
                 </div>
             </div>
             {% empty %}

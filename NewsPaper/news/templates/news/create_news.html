@@ -1,13 +1,13 @@
 {% extends 'flatpages/base.html' %}
-
+{% load i18n %}
 {% block title%}
-CreateNews
+Добавить новость
 {% endblock%}
 
 {% block content %}
 {% include 'flatpages/navbar.html' %}
 <br>
-<h3>Добавить</h3>
+<h3>{% trans 'Добавить новость' %}</h3>
 <hr>
 <br>
 <form method="post" action="">

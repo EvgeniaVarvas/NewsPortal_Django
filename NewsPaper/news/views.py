@@ -1,5 +1,5 @@
 import logging
-
+from django.utils.translation import gettext as _  # импортируем функцию для перевода
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMultiAlternatives
 from django.db.models import Q
@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
+from django.views import View
 from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.conf import settings
@@ -189,3 +190,12 @@ class SearchPost(ListView):
         context['q'] = self.request.GET.get('q')
         context['news'] = self.get_queryset()
         return context
+
+
+# Create your views here.
+
+class Index(View):
+    def get(self, request):
+        string = _('Hello world')
+
+        return HttpResponse(string)

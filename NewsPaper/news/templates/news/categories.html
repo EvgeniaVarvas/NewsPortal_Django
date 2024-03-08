@@ -1,20 +1,22 @@
 {% extends 'flatpages/default.html' %}
-
+{% load i18n %}
 {% block title %}
 Subscriptions
 {% endblock title %}
 {% block content %}
 {% include 'flatpages/navbar.html' %}
-<h1>Список доступных категорий</h1>
+<h1>{% trans 'Список доступных категорий' %}</h1>
 <ul>
     {% for category_info in categories %}
     <li>{{ category_info.category.name }}</li>
     {% if category_info.is_subscribed %}
-    <a href="{% url 'unsubscribe' pk=category_info.category.id %}" class="btn btn-outline-secondary my-2">Отписаться от
-        категории {{ category_info.category.name }}</a>
+    <a href="{% url 'unsubscribe' pk=category_info.category.id %}" class="btn btn-outline-secondary my-2">
+        {% trans 'Отписаться от категории' %} {{ category_info.category.name }}
+    </a>
     {% else %}
-    <a href="{% url 'subscribe' pk=category_info.category.id %}" class="btn btn-outline-secondary my-2">Подписаться на
-        категорию {{ category_info.category.name }}</a>
+    <a href="{% url 'subscribe' pk=category_info.category.id %}" class="btn btn-outline-secondary my-2">
+        {% trans 'Подписаться на категорию' %} {{ category_info.category.name }}
+    </a>
     {% endif %}
     {% endfor %}
 </ul>

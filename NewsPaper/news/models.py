@@ -3,6 +3,7 @@ from django.db.models import Sum
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.core.cache import cache
+from django.utils.translation import gettext as _  # импортируем функцию для перевода
 
 
 class Author(models.Model):
@@ -23,7 +24,8 @@ class Author(models.Model):
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, unique=True, help_text=_('category name'))  # добавим переводящийся текст
+    # подсказку к полю
     subscribe = models.ManyToManyField(User, blank=True, related_name='categories')
 
     def __str__(self):
