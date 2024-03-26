@@ -2,12 +2,13 @@
 <!--{% load cache%}-->
 <!--{% cache 10 navbar %}-->
 {% load i18n %}
+{% load tz %}
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="{% url 'all_list' %}">{%trans 'Новостной Портал' %}</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <!--      <span class="navbar-toggler-icon"></span>-->
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -20,16 +21,36 @@
                     <a class="nav-link active" aria-current="page" href="{% url 'article_list' %}">
                         {%trans 'Статьи'%}</a>
                 </li>
+                {% get_current_timezone as TIME_ZONE %}
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <label for="timezone">Time zone:</label>
+                    <select name="timezone">
+                        {% for tz in timezones %}
+                        <option value="{{ tz }}" {% if tz == TIME_ZONE %} selected{% endif %}>{{ tz }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="submit" value="Set">
+                </form>
+
+                {{ TIME_ZONE }}
+                {{ current_time|timezone:TIME_ZONE }} <!-- Отображаем время в выбранном часовом поясе  -->
+
+                {% for model in models %}
+                <div class="model-class">
+                    {{ model.name }}
+                </div>
+                {% endfor %}
                 <li class="nav-item dropdown">
                     <!-- Вставка иконки -->
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                       aria-expanded="false"><i class="bi bi-translate text-light"></i></a>
+                        aria-expanded="false"><i class="bi bi-translate text-light"></i></a>
                     <ul class="dropdown-menu">
                         {% get_available_languages as LANGUAGES %}
                         {% get_language_info_list for LANGUAGES as languages %}
                         {% for language in languages %}
                         <li>
-                            <form action="{% url 'set_language' %}" method="POST">
+                            <form action="{% url 'set_language' %}" id="language-form" method="POST">
                                 {% csrf_token %}
                                 <input type="hidden" name="next" value="{{ redirect_to }}">
                                 <input type="hidden" name="language" value="{{ language.code }}">
@@ -42,49 +63,55 @@
                     </ul>
                 </li>
 
-
                 <li class="nav-item dropdown">
                     {% if user.is_authenticated %}
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                       aria-expanded="false">
+                        aria-expanded="false">
                         {{ user.username }}
                     </a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{% url 'create_news' %}">
-                            {% trans 'Добавить новость' %}
-                        </a></li>
+                                {% trans 'Добавить новость' %}
+                            </a></li>
                         <li><a class="dropdown-item" href="{% url 'category_all' %}">
-                            {% trans 'Подписки' %}
-                        </a></li>
+                                {% trans 'Подписки' %}
+                            </a></li>
                         <li><a class="dropdown-item" href="{% url 'account_logout' %}">
-                            {% trans 'Выйти' %}
-                        </a></li>
+                                {% trans 'Выйти' %}
+                            </a></li>
 
                     </ul>
                     {% else %}
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                       aria-expanded="false">
+                        aria-expanded="false">
                         {% trans 'Авторизация' %}
                     </a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{% url 'account_login' %}">
-                            {% trans 'Войти' %}
-                        </a></li>
+                                {% trans 'Войти' %}
+                            </a></li>
                         <li><a class="dropdown-item" href="{% url 'account_signup' %}">
-                            {% trans 'Зарегистрироваться' %}
-                        </a></li>
-
+                                {% trans 'Зарегистрироваться' %}
+                            </a></li>
                     </ul>
                     {% endif %}
                 </li>
             </ul>
+
             <form class="d-flex" role="search" action="{% url 'product_search' %}" method="get">
                 <input class="form-control me-2" name="q" type="text" type="search" placeholder="Search"
-                       aria-label="Search">
+                    aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">{% trans 'Поиск' %}</button>
             </form>
             <i class="bi bi-translate"></i>
         </div>
     </div>
 </nav>
+<!-- <script>
+    function reloadPage() {
+        document.querySelector("#language-form").submit(); // Отправить форму
+        location.reload(); // Перезагрузить страницу
+    }
+</script> -->
+
 <!--{% endcache %}-->

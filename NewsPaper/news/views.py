@@ -1,3 +1,6 @@
+import pytz
+ 
+from django.utils import timezone
 import logging
 from django.utils.translation import gettext as _  # импортируем функцию для перевода
 from django.contrib.auth.decorators import login_required
@@ -11,6 +14,7 @@ from django.views import View
 from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.conf import settings
+
 from .tasks import new_post_subscription
 from .forms import PostForm
 from .models import Author, Post, Category
@@ -34,7 +38,13 @@ class PostListMixin(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['news'] = context['object_list']
+        context['current_time'] = timezone.now()
+        context['timezones'] = pytz.common_timezones
         return context
+    
+    def post(self, request):
+        request.session['django_timezone'] = request.POST['timezone']
+        return redirect('/news/')
 
 
 class NewsList(PostListMixin):

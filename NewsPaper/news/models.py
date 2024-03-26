@@ -24,7 +24,7 @@ class Author(models.Model):
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=255, unique=True, help_text=_('category name'))  # добавим переводящийся текст
+    name = models.CharField(max_length=255, unique=True, help_text=_('имя категории'))  # добавим переводящийся текст
     # подсказку к полю
     subscribe = models.ManyToManyField(User, blank=True, related_name='categories')
 
